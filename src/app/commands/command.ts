@@ -17,4 +17,6 @@ export default interface Command {
 	meta: CommandMeta;
 	execute: ExecuteCommandFunction;
 	autocomplete?: AutocompleteCommandOptionFunction;
+// For some reason eslint thinks there is no semicolon here even though there is
+// eslint-disable-next-line semi
 };

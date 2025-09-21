@@ -15,7 +15,7 @@ const ping: Command = {
 
 		const ms = now - interaction.createdTimestamp;
 
-		await interaction.followUp(await t("pingOutput", { ms }));
+		await interaction.followUp(t("pingOutput", { ms }));
 	}
 };
 

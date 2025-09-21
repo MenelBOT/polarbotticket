@@ -1,13 +1,12 @@
 import fs from "fs";
 import YAML from "yaml";
 import * as url from "node:url";
-import packageConfig from "../rewrite/package.json" with { type: "json" };
+import packageConfig from "../package.json" with { type: "json" };
 import Bot from "./app/bot.js";
 import type { BotConfig } from "./types/bot-config.js";
 import { archiveLatestLog, createLogger } from "./logger.js";
 import { Logger } from "winston";
 import util from "node:util";
-import { isDebugEnabledCached as isDebugEnabled } from "./utils/debug.js";
 
 function hookLifecycle(logger: Logger) {
 	process.on("uncaughtException", (error, origin) => {

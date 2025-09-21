@@ -17,12 +17,12 @@
     "config:generate": "tsx src/scripts/generate-bot-config-types.ts"
   },
   "dependencies": {
-    "cheerio": "^1.0.0",
     "@discordjs/builders": "^1.11.2",
     "@discordjs/rest": "^2.5.1",
     "@dotenvx/dotenvx": "^1.45.1",
     "axios": "^1.9.0",
     "bufferutil": "^4.0.9",
+    "cheerio": "^1.0.0",
     "discord-api-types": "^0.38.13",
     "discord.js": "^14.19.3",
     "hjson": "^3.2.2",
@@ -30,6 +30,7 @@
     "i18next-fs-backend": "^2.6.0",
     "node-gyp": "^11.2.0",
     "reflect-metadata": "^0.2.2",
+    "rimraf": "^6.0.1",
     "undici": "^7.10.0",
     "winston": "^3.17.0",
     "xhr2": "^0.2.1",

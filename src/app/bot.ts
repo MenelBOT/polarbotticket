@@ -1,15 +1,15 @@
 import type {
-    SendableChannels,
-    Interaction
+	SendableChannels,
+	Interaction
 } from "discord.js";
 import {
-    Client,
-    Collection,
-    ChatInputCommandInteraction,
-    Events,
-    GatewayIntentBits,
-    MessageFlags,
-    AutocompleteInteraction
+	Client,
+	Collection,
+	ChatInputCommandInteraction,
+	Events,
+	GatewayIntentBits,
+	MessageFlags,
+	AutocompleteInteraction
 } from "discord.js";
 
 import { REST, DiscordAPIError } from "@discordjs/rest";
@@ -21,13 +21,13 @@ import { BotConfig } from "../types/bot-config.js";
 import i18next from "./i18n.js";
 import undici from "undici";
 import type { Logger } from "winston";
-import { createLogger, warn } from "../logger.js";
+import { createLogger } from "../logger.js";
 import TicketHandler from "./handlers/ticket.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export type TranslateFn = (key: string, options?: Record<string, any>) => Promise<string>;
+export type TranslateFn = (key: string, options?: Record<string, any>) => string;
 
 export enum SafetyVerificationResult {
 	Denied = -1,
@@ -37,28 +37,28 @@ export enum SafetyVerificationResult {
 }
 
 export default class Bot {
-    public readonly client: Client;
+	public readonly client: Client;
 	public readonly restClient: REST;
 	public readonly botConfig: BotConfig;
 	public readonly categorizedCommands: Collection<string, Collection<string, Command>> = new Collection();
 	public readonly handlers: { ticket: TicketHandler };
 	public secureChannel: SendableChannels | undefined = undefined;
-    public secureMode: boolean = true;
+	public secureMode: boolean = true;
 	public commands: Collection<string, Command> = new Collection();
 
 	private lastSize: number = 0;
 	private sizeInterval: NodeJS.Timeout | undefined = undefined;
 	private readonly env: string;
 	public readonly logger: Logger;
-    private _ip: string | undefined;
+	private _ip: string | undefined;
 	public get ip(): string {
 		return this._ip ?? "unknown";
 	}
 
-	public async translate(interaction: Interaction, key: string, options?: Record<string, any>): Promise<string> {
+	public translate(_interaction: Interaction, key: string, options?: Record<string, any>): string {
 		return i18next.t(key, { lng: this.botConfig.language, ...options });
 	}
-	public async t(interaction: Interaction, key: string, options?: Record<string, any>): Promise<string> {
+	public t(interaction: Interaction, key: string, options?: Record<string, any>): string {
 		return this.translate(interaction, key, options);
 	}
 
@@ -66,26 +66,26 @@ export default class Bot {
 		this.env = env;
 		this.logger = createLogger("DiscordBot", this.env).logger;
 		this.botConfig = botConfig;
-        this.secureMode = botConfig["C&C"].enable;
+		this.secureMode = botConfig["C&C"].enable;
 
-				this.client = new Client({
-						intents: [
-								GatewayIntentBits.Guilds,
-								GatewayIntentBits.GuildMessages,
-								GatewayIntentBits.MessageContent,
-								GatewayIntentBits.GuildMessageReactions,
-								GatewayIntentBits.GuildMembers,
-								GatewayIntentBits.GuildModeration,
-								GatewayIntentBits.DirectMessages,
-								GatewayIntentBits.DirectMessageReactions
-						]
-				});
+		this.client = new Client({
+			intents: [
+				GatewayIntentBits.Guilds,
+				GatewayIntentBits.GuildMessages,
+				GatewayIntentBits.MessageContent,
+				GatewayIntentBits.GuildMessageReactions,
+				GatewayIntentBits.GuildMembers,
+				GatewayIntentBits.GuildModeration,
+				GatewayIntentBits.DirectMessages,
+				GatewayIntentBits.DirectMessageReactions
+			]
+		});
 
 		this.restClient = new REST({ version: "10" }).setToken(this.botConfig.token);
 
 		this.handlers = {
-            ticket: new TicketHandler(this, this.env)
-        };
+			ticket: new TicketHandler(this, this.env)
+		};
 
 		this.client.once(Events.ClientReady, async (readyClient) => {
 			this.logger.info(`Logged in as ${readyClient.user.username}`);
@@ -99,10 +99,10 @@ export default class Bot {
 				this.client.user!.setActivity(`Watching over ${currentSize} servers!`);
 				this.lastSize = currentSize;
 			}).bind(this), 10000);
-            if (this.secureMode) await this.secureConnection();
+			if (this.secureMode) await this.secureConnection();
 
-            await this.handlers.ticket.load();
-            
+			await this.handlers.ticket.load();
+
 		});
 
 		this.client.on(Events.InteractionCreate, async (interaction) => {
@@ -110,13 +110,13 @@ export default class Bot {
 				await this.handleSlashCommand(interaction);
 			else if (interaction.isAutocomplete())
 				await this.handleAutocomplete(interaction);
-            else if (this.handlers.ticket.isTicketInteraction(interaction))
-                await this.handlers.ticket.handle(interaction);
+			else if (this.handlers.ticket.isTicketInteraction(interaction))
+				await this.handlers.ticket.handle(interaction);
 		});
 
-		this.client.on(Events.MessageCreate, async (message) => {
-            // Tutaj wykonywać komendy tekstowe
-        });
+		this.client.on(Events.MessageCreate, async (_message) => {
+			// Tutaj wykonywać komendy tekstowe
+		});
 	}
 
 	public async login() {
@@ -181,7 +181,7 @@ export default class Bot {
 	}
 
 	private createTranslationFunction(interaction: Interaction): TranslateFn {
-		return (async (key: string, options?: Record<string, any>): Promise<string> => {
+		return ((key: string, options?: Record<string, any>): string => {
 			return this.translate(interaction, key, options);
 		}).bind(this);
 	}
@@ -216,7 +216,7 @@ export default class Bot {
 			[SafetyVerificationResult.InvalidChannel]: "invalidDevChannel"
 		};
 
-		await interaction.followUp({ content: await t(errorMessages[result] ?? "commandError") });
+		await interaction.followUp({ content: t(errorMessages[result] ?? "commandError") });
 	}
 
 	private async handleSlashCommand(interaction: ChatInputCommandInteraction) {
@@ -225,7 +225,7 @@ export default class Bot {
 
 		if (!command) {
 			this.logger.warn(`Command ${interaction.commandName} not found.`);
-			return await interaction.reply({ content: await translateFn("commandNotFound"), flags: MessageFlags.Ephemeral });
+			return await interaction.reply({ content: translateFn("commandNotFound"), flags: MessageFlags.Ephemeral });
 		}
 
 		try {
@@ -237,10 +237,10 @@ export default class Bot {
 				await this.handleDevCommand(interaction, command, translateFn);
 			else await command.execute(interaction, this, translateFn, this.logger);
 
-			void this.safeReplyToInteraction(interaction, command, await translateFn("commandSuccess"));
+			void this.safeReplyToInteraction(interaction, command, translateFn("commandSuccess"));
 		} catch (error) {
 			this.logger.error(`Error executing command ${interaction.commandName}:`, error);
-			void interaction.followUp({ content: await translateFn("commandError") });
+			void interaction.followUp({ content: translateFn("commandError") });
 		}
 	}
 

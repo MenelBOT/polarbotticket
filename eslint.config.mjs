@@ -33,7 +33,6 @@ export default defineConfig([
 
 		rules: {
 			indent: ["error", "tab"],
-			"linebreak-style": ["error", "windows"],
 			quotes: ["error", "double"],
 			semi: ["error", "always"],
 			"brace-style": ["error", "1tbs", { allowSingleLine: true }],
@@ -49,6 +48,7 @@ export default defineConfig([
 			curly: ["error", "multi-or-nest"],
 			"dot-location": ["error", "property"],
 			"handle-callback-err": "off",
+			"linebreak-style": ["error", "unix"],
 			"max-nested-callbacks": ["error", { max: 4 }],
 			"max-statements-per-line": ["error", { max: 2 }],
 			"no-console": "off",
@@ -97,6 +97,6 @@ export default defineConfig([
 
 	{
 		// Ignore top level JS files as they are meant to be scripts, not project code
-		ignores: ["deprecated_node_modules/", "node_modules", "src/migrations/**/*", "generate-migration.js", "run-migrations.js"]
+		ignores: ["deprecated_node_modules/", "node_modules", "src/migrations/**/*", "generate-migration.js", "run-migrations.js", "dist/**/*"]
 	}
 ]);
