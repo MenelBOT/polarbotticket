@@ -1,2 +1,13 @@
 .npm 
 .env 
+node_modules
+config/*.yml
+config/*.yaml
+!config/*.example.*
+db/*.db
+dist
+dist/*
+dump
+dump/*
+logs/**/*
+!**/keep
